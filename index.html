@@ -2,7 +2,7 @@
 <html lang="zh-HK">
 <head>
   <meta charset="UTF-8" />
-  <title>Dashboard – Questionnaire Insights</title>
+  <title>AMA3S01 Group9 Dashboard – Questionnaire Insights</title>
 
   <!-- ApexCharts -->
   <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
@@ -151,12 +151,12 @@
       color: #555;
     }
 
-    /* Q4 summary */
+    /* Q4 summary + heatmap */
     .q4-summary {
       margin-top: 14px;
       background: #ffffff;
       border-radius: 12px;
-      padding: 10px 14px 14px;
+      padding: 10px 14px 16px;
       box-shadow: var(--card-shadow);
       border: 1px solid #e3e7f5;
     }
@@ -173,10 +173,29 @@
       margin-bottom: 6px;
     }
 
+    .q4-summary table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+      margin-bottom: 8px;
+    }
+
+    .q4-summary th,
+    .q4-summary td {
+      border-top: 1px solid #e0e3f0;
+      padding: 4px 6px;
+      text-align: center;
+    }
+
+    .q4-summary th:first-child,
+    .q4-summary td:first-child {
+      text-align: left;
+    }
+
     .q4-chart {
       width: 100%;
-      height: 280px;
-      margin-top: 6px;
+      height: 260px;
+      margin-top: 4px;
     }
 
     /* Sections */
@@ -276,9 +295,8 @@
     @media (max-width: 900px) { .wide-2 { grid-column: span 1; } }
 
     /* Chart heights */
-    #chart1,#chart2,#chart3,#chart4,#chart7,#chart8,#chart10 { height: 280px; }
-    #chart5 { height: 300px; }
-    #chart6 { height: 340px; }
+    #chart1,#chart2,#chart3,#chart4,#chart5,#chart7,#chart8,#chart10 { height: 280px; }
+    #chart6 { height: 360px; }
     #chart13 { height: 300px; }
     #chart9 { height: 280px; }
     #chart11,#chart12 { height: 340px; }
@@ -287,8 +305,8 @@
 <body>
   <!-- Main heading -->
   <div class="header">
-    <h1>Dashboard</h1>
-    <p>Key trends and business insights</p>
+    <h1>AMA3S01 Group 9 Dashboard</h1>
+    <p>Key trends and insights</p>
 
     <div class="top-nav">
       <button data-target="#sec1"><i class="fa-solid fa-city"></i>土瓜灣社區概況</button>
@@ -345,12 +363,25 @@
       Coding assumed：Q1 年齡，Q2 性別，Q3 家庭人數，Q4 照顧對象及人數，Q5 住屋類型，Q6 家庭收入，Q8 公共設施需要，Q9 暫託服務需要，Q18 參與活動，Q19 活動滿意度，Q20 未來活動期望，Q22 消費券幫助程度，Q23 消費券用途。
     </p>
 
-    <!-- Q4 distribution summary -->
+    <!-- Q4 distribution summary + heatmap -->
     <div class="q4-summary">
       <div class="q4-summary-title">Q4 現時照顧家人／親屬人數結構</div>
       <div class="q4-summary-caption">
-        以熱度圖 (Heatmap) 顯示在 0 名至 4 名或以上不同照顧人數下，兒童、長者及殘疾人士三類照顧對象的受訪者比例（％），顏色愈深代表比例愈高。
+        以熱度圖 (Heatmap) 顯示在 0 名至 4 名或以上不同照顧人數下，兒童、長者及殘疾人士三類照顧對象的受訪者比例（%），顏色愈深代表比例愈高。
       </div>
+      <table>
+        <thead>
+          <tr>
+            <th>照顧對象</th>
+            <th>0 名</th>
+            <th>1 名</th>
+            <th>2 名</th>
+            <th>3 名</th>
+            <th>4 名或以上</th>
+          </tr>
+        </thead>
+        <tbody id="q4-table-body"></tbody>
+      </table>
       <div class="q4-chart" id="q4-chart"></div>
     </div>
 
@@ -385,12 +416,7 @@
           <div class="chart-body" id="chart3"></div>
         </div>
 
-        <div class="chart-card accent-green">
-          <div class="chart-title">同時照顧的家庭成員種類數目 (Q4)</div>
-          <div class="chart-caption">橫向柱圖顯示「0 至 3 種照顧角色」的人數。</div>
-          <div class="chart-body" id="chart4"></div>
-        </div>
-
+    
         <div class="chart-card accent-blue">
           <div class="chart-title">住屋類型 (Q5)</div>
           <div class="chart-caption">反映照顧者主要居住於公屋、唐樓／私樓等的情況。</div>
@@ -411,9 +437,7 @@
 
         <div class="chart-card accent-purple wide-2">
           <div class="chart-title">最有幫助的暫託服務類型 (Q9)</div>
-          <div class="chart-caption">
-            以扇形面積圖顯示各類暫託服務被選為「最有幫助」的人數，愈大代表愈多人需要。
-          </div>
+          <div class="chart-caption">橫向柱圖比較各種課餘託管、假日託管、緊急照顧等服務的重要性。</div>
           <div class="chart-body" id="chart10"></div>
         </div>
       </div>
@@ -434,7 +458,7 @@
       <div class="section-grid">
         <div class="chart-card accent-orange wide-2">
           <div class="chart-title">消費券對家庭生活的幫助程度 (Q22)</div>
-          <div class="chart-caption">愈左代表愈有幫助，愈右代表幫助較少。</div>
+          <div class="chart-caption">圓環愈外圈代表選擇該答案的比例愈高，中央顯示最常見的評價。</div>
           <div class="chart-body" id="chart7"></div>
         </div>
 
@@ -504,10 +528,10 @@
     };
 
     const HOUSING_LABELS = {
-      '1': '唐樓／私樓 (非天台)',
+      '1': '唐樓私樓-非天台',
       '2': '天台分間單位',
       '3': '宿舍／劏房',
-      '4': '半地下劏房',
+      '4': '劏房',
       '5': '公屋',
       '6': '中轉屋',
       '7': '其他／未列明'
@@ -524,12 +548,13 @@
       '8': '不願回答'
     };
 
+    // Q22：1=完全無幫助 … 5=非常有幫助
     const VOUCHER_HELP_LABELS = {
-      '1': '非常有幫助',
-      '2': '頗有幫助',
-      '3': '一般',
-      '4': '幫助不大',
-      '5': '完全沒有幫助'
+      '1': '完全沒有幫助',
+      '2': '沒有太大幫助',
+      '3': '幫助一般',
+      '4': '有幫助',
+      '5': '非常有幫助'
     };
 
     const Q18_LABELS = {
@@ -658,16 +683,16 @@
       const multiRolePercent = total > 0 ? (multiRoleCount / total) * 100 : 0;
 
       function countByField(fieldName) {
-        const map = {};
+        const freq = {};
         data.forEach(r => {
           const key = String(r[fieldName] || '').trim();
           if (!key) return;
-          if (!map[key]) map[key] = 0;
-          map[key]++;
+          if (!freq[key]) freq[key] = 0;
+          freq[key]++;
         });
-        const keys = Object.keys(map).sort((a, b) => Number(a) - Number(b));
-        const counts = keys.map(k => map[k]);
-        return { keys, counts };
+        const keys = Object.keys(freq).sort((a, b) => Number(a) - Number(b));
+        const counts = keys.map(k => freq[k]);
+        return { keys, counts, freq };
       }
 
       const ageInfo         = countByField('Q1_Age');
@@ -696,7 +721,7 @@
       document.getElementById('kpi-percent-multi-role').textContent   = multiRolePercent.toFixed(1) + '%';
       document.getElementById('kpi-top-housing-type').textContent     = topHousingLabel;
 
-      /* ----- Q4: 0–4名分佈（percentage，用 heatmap） ----- */
+      // Q4 distribution table + heatmap data
       function q4Dist(fieldName) {
         const counts = [0, 0, 0, 0, 0]; // 0–4
         let validTotal = 0;
@@ -715,33 +740,27 @@
       const distElderly = q4Dist('Q4_Care_Elderly');
       const distDisabled= q4Dist('Q4_Care_Disabled');
 
-      const q4Categories = ['0 名', '1 名', '2 名', '3 名', '4 名或以上'];
+      const q4Body = document.getElementById('q4-table-body');
+      function appendRow(label, dist) {
+        const tr = document.createElement('tr');
+        const tdLabel = document.createElement('td');
+        tdLabel.textContent = label;
+        tr.appendChild(tdLabel);
+        ['0 名','1 名','2 名','3 名','4 名或以上'].forEach((_, idx) => {
+          const td = document.createElement('td');
+          td.textContent = dist.perc[idx].toFixed(1) + '%';
+          tr.appendChild(td);
+        });
+        q4Body.appendChild(tr);
+      }
+      appendRow('照顧兒童',   distChild);
+      appendRow('照顧長者',   distElderly);
+      appendRow('照顧殘疾人士', distDisabled);
 
-      const q4HeatmapSeries = [
-        {
-          name: '照顧兒童',
-          data: q4Categories.map((lbl, idx) => ({
-            x: lbl,
-            y: Number(distChild.perc[idx].toFixed(1))
-          }))
-        },
-        {
-          name: '照顧長者',
-          data: q4Categories.map((lbl, idx) => ({
-            x: lbl,
-            y: Number(distElderly.perc[idx].toFixed(1))
-          }))
-        },
-        {
-          name: '照顧殘疾人士',
-          data: q4Categories.map((lbl, idx) => ({
-            x: lbl,
-            y: Number(distDisabled.perc[idx].toFixed(1))
-          }))
-        }
-      ];
+      // 畫返 Q4 Heatmap
+      renderQ4Heatmap(distChild, distElderly, distDisabled);
 
-      // Q18 participation
+      // caring counts for chart3
       const caringCounts = {
         'Child':    careChildCount,
         'Elderly':  careElderlyCount,
@@ -750,6 +769,7 @@
       const roleLabels = Object.keys(rolesPerPersonCounts).sort((a,b)=>Number(a)-Number(b));
       const roleSeries = roleLabels.map(k => rolesPerPersonCounts[k]);
 
+      // Q18 participation
       const q18Labels = [];
       const q18Counts = [];
       [
@@ -768,6 +788,7 @@
         q18Counts.push(c);
       });
 
+      // Q8 facilities
       const q8Labels = [];
       const q8Counts = [];
       Q8_ITEMS.forEach(item => {
@@ -783,6 +804,7 @@
         q8Counts.push(c);
       });
 
+      // Q9 respite services
       const q9Labels = [];
       const q9Counts = [];
       Q9_ITEMS.forEach(item => {
@@ -798,23 +820,31 @@
         q9Counts.push(c);
       });
 
+   
+
+      // Q19 satisfaction：直接用 1–5 平均分（愈高愈滿意）
       const q19Labels = [];
       const q19Scores = [];
       Q19_ITEMS.forEach(item => {
         let sum = 0, n = 0;
         data.forEach(r => {
           const v = toNumber(r[item.key]);
-          if (v > 0) { sum += v; n++; }
+          if (v > 0) {         // 假設 1 = 非常不滿意，5 = 非常滿意
+            sum += v;
+            n++;
+          }
         });
         let score = 0;
         if (n > 0) {
-          const avg = sum / n;   // 1=非常滿意,5=非常不滿意
-          score = 6 - avg;       // 轉成 1–5，愈高愈滿意
+          const avg = sum / n; // 1–5 的平均分
+          score = avg;
         }
         q19Labels.push(item.label);
         q19Scores.push(score);
       });
 
+
+      // Q20 future activities
       const q20Labels = [];
       const q20Counts = [];
       Q20_ITEMS.forEach(item => {
@@ -830,6 +860,7 @@
         q20Counts.push(c);
       });
 
+      // Q23 spending
       const q23Labels = [];
       const q23Counts = [];
       Q23_ITEMS.forEach(item => {
@@ -842,8 +873,6 @@
       renderCharts({
         ageInfo,
         genderInfo,
-        q4Categories,
-        q4HeatmapSeries,
         caringCounts,
         roleLabels,
         roleSeries,
@@ -865,49 +894,77 @@
       });
     }
 
-    function renderCharts(d) {
-      /* ----- Q4：照顧人數結構（Heatmap） ----- */
+    // Q4 Heatmap
+    function renderQ4Heatmap(distChild, distElderly, distDisabled) {
+      const categories = ['0 名', '1 名', '2 名', '3 名', '4 名或以上'];
+
+      function makeSeries(name, percArray) {
+        return {
+          name,
+          data: categories.map((label, idx) => ({
+            x: label,
+            y: Number(percArray[idx].toFixed(1))
+          }))
+        };
+      }
+
+      const series = [
+        makeSeries('照顧殘疾人士', distDisabled.perc),
+        makeSeries('照顧長者',     distElderly.perc),
+        makeSeries('照顧兒童',     distChild.perc)
+      ];
+
       new ApexCharts(document.querySelector("#q4-chart"), {
-        chart: { type: 'heatmap', height: 260, toolbar: { show: false } },
-        series: d.q4HeatmapSeries,
+        chart: {
+          type: 'heatmap',
+          height: 260,
+          toolbar: { show: false }
+        },
+        series,
         dataLabels: {
           enabled: true,
-          style: { fontSize: '11px', colors: ['#ffffff'] },
-          formatter: val => val.toFixed(0) + '%'
+          style: { colors: ['#fff'], fontSize: '11px' },
+          formatter: val => val ? val.toFixed(0) + '%' : '0%'
         },
         xaxis: {
-          type: 'category',
-          categories: d.q4Categories,
           title: { text: '照顧人數', style: { color: COLOR_PRIMARY } },
           labels: { style: { colors: COLOR_PRIMARY, fontSize: '11px' } }
         },
         yaxis: {
           title: { text: '照顧對象', style: { color: COLOR_PRIMARY } },
-          labels: { style: { colors: [COLOR_PRIMARY, COLOR_PRIMARY, COLOR_PRIMARY], fontSize: '11px' } }
+          labels: { style: { colors: COLOR_PRIMARY, fontSize: '11px' } }
         },
+        colors: ['#dbe9ff'],
         plotOptions: {
           heatmap: {
-            shadeIntensity: 0.7,
+            shadeIntensity: 0.6,
             colorScale: {
               ranges: [
-                { from: 0,  to: 10, color: '#e1ecff', name: '0–10%' },
-                { from: 10, to: 30, color: '#9ec5ff', name: '10–30%' },
-                { from: 30, to: 60, color: '#5a8dee', name: '30–60%' },
-                { from: 60, to: 100, color: '#1f4e79', name: '60% 以上' }
+                { from: 0,  to: 10, color: '#e8f0ff', name: '0–10%' },
+                { from: 10, to: 30, color: '#bdd5ff', name: '10–30%' },
+                { from: 30, to: 60, color: '#7fa7ff', name: '30–60%' },
+                { from: 60, to: 100, color: '#315f9f', name: '60%以上' }
               ]
             }
           }
         },
         legend: {
           position: 'right',
-          labels: { colors: COLOR_PRIMARY }
+          labels: { colors: COLOR_PRIMARY, useSeriesColors: false }
         },
         tooltip: {
-          y: { formatter: val => val.toFixed(1) + '% 受訪者' }
+          y: {
+            formatter: (val, opts) => {
+              const rowName = opts.seriesName;
+              return `${rowName}: ${val.toFixed(1)}% 受訪者`;
+            }
+          }
         }
       }).render();
+    }
 
-      /* ----- 1 Age (bar) ----- */
+    function renderCharts(d) {
+      // 1 Age (bar)
       new ApexCharts(document.querySelector("#chart1"), {
         chart: { type: 'bar', height: 280, toolbar: { show: false } },
         series: [{ name: '受訪者人數', data: d.ageInfo.counts }],
@@ -925,7 +982,7 @@
         dataLabels: { enabled: false }
       }).render();
 
-      /* ----- 2 Gender (donut) ----- */
+      // 2 Gender (donut)
       new ApexCharts(document.querySelector("#chart2"), {
         chart: { type: 'donut', height: 280 },
         series: d.genderInfo.counts,
@@ -935,7 +992,7 @@
         dataLabels: { enabled: true, formatter: val => val.toFixed(1) + '%' }
       }).render();
 
-      /* ----- 3 Caring roles (polar area) ----- */
+      // 3 Caring roles (polar area)
       new ApexCharts(document.querySelector("#chart3"), {
         chart: { type: 'polarArea', height: 280 },
         series: ['Child', 'Elderly', 'Disabled'].map(k => d.caringCounts[k]),
@@ -947,58 +1004,45 @@
         yaxis: { show: false }
       }).render();
 
-      /* ----- 4 Roles per respondent (horizontal bar) ----- */
-      new ApexCharts(document.querySelector("#chart4"), {
-        chart: { type: 'bar', height: 280, toolbar: { show: false } },
-        series: [{ name: '受訪者人數', data: d.roleSeries }],
-        xaxis: {
-          title: { text: '人數', style: { color: COLOR_PRIMARY } },
-          labels: { style: { colors: COLOR_PRIMARY, fontSize: '11px' } }
-        },
-        yaxis: {
-          title: { text: '同時照顧的對象數目', style: { color: COLOR_PRIMARY } },
-          categories: d.roleLabels.map(k => `${k} 種`),
-          labels: { style: { colors: COLOR_PRIMARY, fontSize: '11px' } }
-        },
-        plotOptions: { bar: { horizontal: true, barHeight: '50%', borderRadius: 6 } },
-        colors: [COLOR_3],
-        dataLabels: { enabled: false }
-      }).render();
+      // 4 Roles per respondent (horizontal bar)
+      // new ApexCharts(document.querySelector("#chart4"), {
+      //   chart: { type: 'bar', height: 280, toolbar: { show: false } },
+      //   series: [{ name: '受訪者人數', data: d.roleSeries }],
+      //   xaxis: {
+      //     title: { text: '人數', style: { color: COLOR_PRIMARY } },
+      //     labels: { style: { colors: COLOR_PRIMARY, fontSize: '11px' } }
+      //   },
+      //   yaxis: {
+      //     title: { text: '同時照顧的對象數目', style: { color: COLOR_PRIMARY } },
+      //     categories: d.roleLabels.map(k => `${k} 種`),
+      //     labels: { style: { colors: COLOR_PRIMARY, fontSize: '11px' } }
+      //   },
+      //   plotOptions: { bar: { horizontal: true, barHeight: '50%', borderRadius: 6 } },
+      //   colors: [COLOR_3],
+      //   dataLabels: { enabled: false }
+      // }).render();
 
-      /* ----- 5 Housing (horizontal ranking bar) ----- */
+      // 5 Housing (vertical bar)
       new ApexCharts(document.querySelector("#chart5"), {
-        chart: { type: 'bar', height: 300, toolbar: { show: false } },
+        chart: { type: 'bar', height: 280, toolbar: { show: false } },
         series: [{ name: '戶數', data: d.housingInfo.counts }],
         xaxis: {
+          title: { text: '住屋類型', style: { color: COLOR_PRIMARY } },
+          categories: d.housingInfo.keys.map(k => mapLabel(HOUSING_LABELS, k)),
+          labels: { style: { colors: COLOR_PRIMARY, fontSize: '11px' }, rotate: -20 }
+        },
+        yaxis: {
           title: { text: '戶數', style: { color: COLOR_PRIMARY } },
           labels: { style: { colors: COLOR_PRIMARY, fontSize: '11px' } }
         },
-        yaxis: {
-          title: { text: '住屋類型', style: { color: COLOR_PRIMARY } },
-          categories: d.housingInfo.keys.map(k => mapLabel(HOUSING_LABELS, k)),
-          labels: { style: { colors: COLOR_PRIMARY, fontSize: '11px' } }
-        },
-        plotOptions: {
-          bar: {
-            horizontal: true,
-            barHeight: '55%',
-            borderRadius: 6
-          }
-        },
+        plotOptions: { bar: { columnWidth: '55%', borderRadius: 6 } },
         colors: [COLOR_4],
-        dataLabels: {
-          enabled: true,
-          formatter: val => val + ' 戶',
-          style: { fontSize: '11px' }
-        },
-        tooltip: {
-          y: { formatter: val => val + ' 戶' }
-        }
+        dataLabels: { enabled: false }
       }).render();
 
-      /* ----- 6 Income (treemap) ----- */
+      // 6 Income (treemap)
       new ApexCharts(document.querySelector("#chart6"), {
-        chart: { type: 'treemap', height: 340, toolbar: { show: false } },
+        chart: { type: 'treemap', height: 300, toolbar: { show: false } },
         series: [{
           data: d.incomeInfo.keys.map((k, idx) => ({
             x: mapLabel(INCOME_LABELS, k),
@@ -1016,28 +1060,57 @@
         colors: [COLOR_5, COLOR_2, COLOR_3, COLOR_4, COLOR_6, COLOR_PRIMARY, '#8e44ad', '#27ae60']
       }).render();
 
-      /* ----- 7 Voucher help (horizontal bar) ----- */
+      /* 7 Q22 Voucher help (radial bar) */
+      const voucherCodes = ['5','4','3','2','1'];
+      const voucherCounts = voucherCodes.map(code =>
+        (d.voucherHelpInfo.freq && d.voucherHelpInfo.freq[code])
+          ? d.voucherHelpInfo.freq[code]
+          : 0
+      );
+      const voucherTotal = voucherCounts.reduce((a,b) => a + b, 0);
+      const voucherPerc = voucherCounts.map(c => voucherTotal > 0 ? (c * 100 / voucherTotal) : 0);
+      const voucherLabels = voucherCodes.map(code => VOUCHER_HELP_LABELS[code] || ('選項 ' + code));
+
+      let maxIdx = 0;
+      for (let i = 1; i < voucherPerc.length; i++) {
+        if (voucherPerc[i] > voucherPerc[maxIdx]) maxIdx = i;
+      }
+      const maxLabel = voucherLabels[maxIdx];
+      const maxPerc  = voucherPerc[maxIdx];
+
       new ApexCharts(document.querySelector("#chart7"), {
-        chart: { type: 'bar', height: 280, toolbar: { show: false } },
-        series: [{ name: '受訪者人數', data: d.voucherHelpInfo.counts }],
-        xaxis: {
-          title: { text: '人數', style: { color: COLOR_PRIMARY } },
-          labels: { style: { colors: COLOR_PRIMARY, fontSize: '11px' } }
+        chart: { type: 'radialBar', height: 320 },
+        series: voucherPerc,
+        labels: voucherLabels,
+        colors: ['#ffb347', '#ff7a8a', '#0066cc', '#8e44ad', '#27ae60'],
+        plotOptions: {
+          radialBar: {
+            dataLabels: {
+              name: { fontSize: '12px' },
+              value: {
+                fontSize: '12px',
+                formatter: v => v.toFixed(1) + '%'
+              },
+              total: {
+                show: true,
+                label: '最多人覺得',
+                formatter: () => `${maxLabel} (${maxPerc.toFixed(1)}%)`
+              }
+            }
+          }
         },
-        yaxis: {
-          title: { text: '消費券幫助程度', style: { color: COLOR_PRIMARY } },
-          categories: d.voucherHelpInfo.keys.map(k => {
-            const label = mapLabel(VOUCHER_HELP_LABELS, k);
-            return `${label} (${k})`;
-          }),
-          labels: { style: { colors: COLOR_PRIMARY, fontSize: '11px' } }
-        },
-        plotOptions: { bar: { horizontal: true, barHeight: '55%', borderRadius: 6 } },
-        colors: ['#ff7a8a'],
-        dataLabels: { enabled: false }
+        legend: {
+          show: true,
+          position: 'right',
+          labels: { colors: COLOR_PRIMARY },
+          formatter: (seriesName, opts) => {
+            const val = voucherCounts[opts.seriesIndex];
+            return `${seriesName}：${val} 人`;
+          }
+        }
       }).render();
 
-      /* ----- 8 Q18 participation ----- */
+      // 8 Q18 participation
       new ApexCharts(document.querySelector("#chart8"), {
         chart: { type: 'bar', height: 280, toolbar: { show: false } },
         series: [{ name: '有參與人數', data: d.q18Counts }],
@@ -1056,9 +1129,9 @@
         tooltip: { y: { formatter: v => `${v} 名受訪者` } }
       }).render();
 
-      /* ----- 9 Q8 facilities (radar) ----- */
+      // 9 Q8 facilities (radar)
       new ApexCharts(document.querySelector("#chart9"), {
-        chart: { type: 'radar', height: 280, toolbar: { show: false } },
+        chart: { type: 'radar', height: 340, toolbar: { show: false } },
         series: [{ name: '選擇人數', data: d.q8Counts }],
         labels: d.q8Labels,
         colors: [COLOR_PRIMARY],
@@ -1071,40 +1144,38 @@
         markers: { size: 3 }
       }).render();
 
-      /* ----- 10 Q9 respite services (polar area) ----- */
+      // 10 Q9 respite services (horizontal bar, 只顯示頭五項)
+      // 10 Q9 respite services (horizontal bar, 只顯示頭五項)
+      const q9LabelsTop5 = d.q9Labels.slice(0, 5);
+      const q9CountsTop5 = d.q9Counts.slice(0, 5);
+
       new ApexCharts(document.querySelector("#chart10"), {
-        chart: { type: 'polarArea', height: 320, toolbar: { show: false } },
-        series: d.q9Counts,
-        labels: d.q9Labels,
-        stroke: { width: 1 },
-        colors: [COLOR_4, COLOR_2, COLOR_3, COLOR_5, COLOR_6, '#27ae60'],
-        fill: { opacity: 0.85 },
-        legend: {
-          position: 'right',
-          labels: { colors: COLOR_PRIMARY }
+        chart: { type: 'bar', height: 300, toolbar: { show: false } },
+        series: [{ name: '受訪者人數', data: q9CountsTop5 }],
+        plotOptions: {
+          bar: {
+            horizontal: true,
+            barHeight: '50%',
+            borderRadius: 6
+          }
         },
-        dataLabels: {
-          enabled: true,
-          formatter: (val, opts) => {
-            const count = d.q9Counts[opts.seriesIndex];
-            return count + ' 人';
-          },
-          style: { fontSize: '11px' }
+        // 注意：分類名稱要放喺 xaxis.categories，Apex 先會顯示喺左邊
+        xaxis: {
+          categories: q9LabelsTop5,
+          title: { text: '人數', style: { color: COLOR_PRIMARY } },
+          labels: { style: { colors: COLOR_PRIMARY, fontSize: '11px' } }
         },
         yaxis: {
-          labels: { show: false }
+          title: { text: '暫託服務種類', style: { color: COLOR_PRIMARY } },
+          labels: { style: { colors: COLOR_PRIMARY, fontSize: '11px' } }
         },
-        tooltip: {
-          y: {
-            formatter: (val, opts) => {
-              const count = d.q9Counts[opts.seriesIndex];
-              return count + ' 名受訪者';
-            }
-          }
-        }
+        colors: ['#27ae60'],
+        dataLabels: { enabled: false },
+        tooltip: { y: { formatter: v => `${v} 名受訪者` } }
       }).render();
 
-      /* ----- 11 Q19 satisfaction (radar) ----- */
+
+      // 11 Q19 satisfaction (radar)
       new ApexCharts(document.querySelector("#chart11"), {
         chart: { type: 'radar', height: 340, toolbar: { show: false } },
         series: [{ name: '平均滿意度（愈高愈滿意）', data: d.q19Scores }],
@@ -1121,7 +1192,7 @@
         markers: { size: 3 }
       }).render();
 
-      /* ----- 12 Q20 future activities (radar) ----- */
+      // 12 Q20 future activities (radar)
       new ApexCharts(document.querySelector("#chart12"), {
         chart: { type: 'radar', height: 340, toolbar: { show: false } },
         series: [{ name: '有興趣人數', data: d.q20Counts }],
@@ -1137,29 +1208,13 @@
         tooltip: { y: { formatter: v => `${v} 名受訪者` } }
       }).render();
 
-      /* ----- 13 Q23 spending (radial bar) ----- */
+      // 13 Q23 spending (radial bar)
       new ApexCharts(document.querySelector("#chart13"), {
         chart: { type: 'radialBar', height: 300 },
         series: d.q23Counts,
         labels: d.q23Labels,
         colors: ['#ffb347', '#ff7a8a', '#0066cc', '#27ae60', '#8e44ad', '#558ed5', '#1f4e79'],
-        plotOptions: {
-          radialBar: {
-            offsetY: 0,
-            dataLabels: {
-              name: { fontSize: '12px' },
-              value: { fontSize: '12px', formatter: v => Math.round(v) + ' 人' },
-              total: {
-                show: true,
-                label: '合計',
-                formatter: () => {
-                  const sum = d.q23Counts.reduce((a, b) => a + b, 0);
-                  return sum + ' 人次';
-                }
-              }
-            }
-          }
-        },
+        
         legend: {
           show: true,
           position: 'right',
