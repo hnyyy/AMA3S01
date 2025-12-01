@@ -1,0 +1,1202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AMA3S01 Group9 Dashboard – Questionnaire Insights</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+  />
+
+  <style>
+    :root {
+      --primary: #021640;
+      --c2: #0066cc;
+      --c3: #0099cc;
+      --c4: #4572c4;
+      --c5: #558ed5;
+      --c6: #1f4e79;
+      --accent1: #ff7a8a;
+      --accent2: #ffb347;
+      --accent3: #8e44ad;
+      --accent4: #27ae60;
+      --card-bg: #ffffff;
+      --card-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f4f6fb;
+      color: var(--primary);
+    }
+
+    .header {
+      background: #021640;
+      color: #ffffff;
+      text-align: center;
+      padding: 18px 16px 12px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 26px;
+      letter-spacing: 1px;
+    }
+
+    .header p {
+      margin: 3px 0 0;
+      font-size: 13px;
+      opacity: 0.85;
+    }
+
+    .page {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 18px 24px 40px;
+    }
+
+    /* Top nav */
+    .top-nav {
+      margin: 10px auto 0;
+      max-width: 900px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .top-nav button {
+      border: none;
+      padding: 8px 16px;
+      border-radius: 999px;
+      background: #ffffff;
+      color: #021640;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    }
+
+    .top-nav button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      background: #f2f4ff;
+    }
+
+    .top-nav button i { font-size: 14px; }
+
+    /* KPI cards */
+    .kpi-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+      margin-top: 18px;
+      justify-content: center;
+    }
+
+    .kpi-card {
+      width: 260px;
+      height: 95px;
+      background: #ffffff;
+      box-shadow: var(--card-shadow);
+      border-radius: 14px;
+      padding: 9px 13px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      color: var(--primary);
+      border: 1px solid #e3e7f5;
+    }
+
+    .kpi-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .kpi-header i {
+      font-size: 16px;
+      color: #4572c4;
+    }
+
+    .kpi-value {
+      font-size: 20px;
+      font-weight: 700;
+      margin-top: 4px;
+      color: #021640;
+    }
+
+    .note {
+      margin-top: 10px;
+      font-size: 11px;
+      color: #555;
+    }
+
+    /* Q4 summary + heatmap */
+    .q4-summary {
+      margin-top: 14px;
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 10px 14px 16px;
+      box-shadow: var(--card-shadow);
+      border: 1px solid #e3e7f5;
+    }
+
+    .q4-summary-title {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 3px;
+    }
+
+    .q4-summary-caption {
+      font-size: 11px;
+      color: #666;
+      margin-bottom: 6px;
+    }
+
+    .q4-summary table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+      margin-bottom: 8px;
+    }
+
+    .q4-summary th,
+    .q4-summary td {
+      border-top: 1px solid #e0e3f0;
+      padding: 4px 6px;
+      text-align: center;
+    }
+
+    .q4-summary th:first-child,
+    .q4-summary td:first-child {
+      text-align: left;
+    }
+
+    .q4-chart {
+      width: 100%;
+      height: 260px;
+      margin-top: 4px;
+    }
+
+    /* Sections */
+    .section {
+      margin-top: 30px;
+      padding: 22px 20px 26px;
+      border-radius: 20px;
+      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.07);
+      position: relative;
+    }
+
+    .section1 { background: #eef2ff; }
+    .section2 { background: #fff5e6; }
+    .section3 { background: #f2efff; }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 10px;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-title span.icon {
+      width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #ffffff;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .section-title span.icon i {
+      font-size: 14px;
+      color: #021640;
+    }
+
+    .section-subtitle {
+      font-size: 12px;
+      color: #333;
+      max-width: 60%;
+    }
+
+    /* Chart grid */
+    .section-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 18px;
+      margin-top: 10px;
+    }
+
+    .chart-card {
+      background: #ffffff;
+      box-shadow: var(--card-shadow);
+      border-radius: 14px;
+      padding: 10px 12px 8px;
+      display: flex;
+      flex-direction: column;
+      min-height: 260px;
+      border: 1px solid #e3e7f5;
+    }
+
+    .chart-card.accent-blue   { border-top: 3px solid #4572c4; }
+    .chart-card.accent-orange { border-top: 3px solid #ffb347; }
+    .chart-card.accent-purple { border-top: 3px solid #8e44ad; }
+    .chart-card.accent-green  { border-top: 3px solid #27ae60; }
+
+    .chart-title {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 2px;
+      color: var(--primary);
+    }
+
+    .chart-caption {
+      font-size: 11px;
+      color: #666;
+      margin-bottom: 4px;
+    }
+
+    .chart-body {
+      width: 100%;
+      flex: 1;
+    }
+
+    .wide-2 { grid-column: span 2; }
+    @media (max-width: 900px) { .wide-2 { grid-column: span 1; } }
+
+    /* Chart heights */
+    #chart1,#chart2,#chart3,#chart4,#chart5,#chart7,#chart8,#chart10 { height: 280px; }
+    #chart6 { height: 360px; }
+    #chart13 { height: 300px; }
+    #chart9 { height: 280px; }
+    #chart11,#chart12 { height: 340px; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>AMA3S01 Group 9 Dashboard</h1>
+    <p>Key Trends and Insights</p>
+
+    <div class="top-nav">
+      <button data-target="#sec1"><i class="fa-solid fa-city"></i>To Kwa Wan Overview</button>
+      <button data-target="#sec2"><i class="fa-solid fa-ticket"></i>Consumption Vouchers</button>
+      <button data-target="#sec3"><i class="fa-solid fa-people-group"></i>Activities & Satisfaction</button>
+    </div>
+  </div>
+
+  <div class="page">
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <span>Total Respondents</span>
+          <i class="fa-solid fa-users"></i>
+        </div>
+        <div class="kpi-value" id="kpi-total-respondents">0</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <span>% Caring for Children (Q4)</span>
+          <i class="fa-solid fa-child-reaching"></i>
+        </div>
+        <div class="kpi-value" id="kpi-percent-care-child">0%</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <span>% Caring for Elderly (Q4)</span>
+          <i class="fa-solid fa-person-cane"></i>
+        </div>
+        <div class="kpi-value" id="kpi-percent-care-elderly">0%</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <span>% with Multiple Care Roles (Q4)</span>
+          <i class="fa-solid fa-people-roof"></i>
+        </div>
+        <div class="kpi-value" id="kpi-percent-multi-role">0%</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <span>Most Common Housing (Q5)</span>
+          <i class="fa-solid fa-house"></i>
+        </div>
+        <div class="kpi-value" id="kpi-top-housing-type">—</div>
+      </div>
+    </div>
+
+    <p class="note">
+      Coding assumed: Q1 Age, Q2 Gender, Q3 Family Size, Q4 Care Recipients & Count, Q5 Housing Type, Q6 Family Income, Q8 Public Facilities Needs, Q9 Respite Service Needs, Q18 Activity Participation, Q19 Activity Satisfaction, Q20 Future Expectations, Q22 Voucher Helpfulness, Q23 Voucher Spending.
+    </p>
+
+    <div class="q4-summary">
+      <div class="q4-summary-title">Q4 Current Family/Relative Care Structure</div>
+      <div class="q4-summary-caption">
+        Heatmap showing the percentage (%) of respondents caring for 0 to 4+ individuals across three categories: Children, Elderly, and Disabled. Darker colors indicate a higher percentage.
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Care Recipient</th>
+            <th>0 People</th>
+            <th>1 Person</th>
+            <th>2 People</th>
+            <th>3 People</th>
+            <th>4+ People</th>
+          </tr>
+        </thead>
+        <tbody id="q4-table-body"></tbody>
+      </table>
+      <div class="q4-chart" id="q4-chart"></div>
+    </div>
+
+    <section class="section section1" id="sec1">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="icon"><i class="fa-solid fa-city"></i></span>
+          <span>To Kwa Wan Caregiver Community Overview</span>
+        </div>
+        <div class="section-subtitle">
+          Describes the background of interviewed caregivers, including age, gender, housing type, and family income, as well as their needs for public facilities and respite services.
+        </div>
+      </div>
+
+      <div class="section-grid">
+        <div class="chart-card accent-blue">
+          <div class="chart-title">Age Distribution (Q1)</div>
+          <div class="chart-caption">Number of caregivers per age group.</div>
+          <div class="chart-body" id="chart1"></div>
+        </div>
+
+        <div class="chart-card accent-blue">
+          <div class="chart-title">Gender Distribution (Q2)</div>
+          <div class="chart-caption">Ratio of Male / Female / Prefer not to say.</div>
+          <div class="chart-body" id="chart2"></div>
+        </div>
+
+        <div class="chart-card accent-green">
+          <div class="chart-title">Care Recipient Type (Q4)</div>
+          <div class="chart-caption">Polar chart showing number of caregivers for Children, Elderly, and Disabled.</div>
+          <div class="chart-body" id="chart3"></div>
+        </div>
+
+    
+        <div class="chart-card accent-blue">
+          <div class="chart-title">Housing Type (Q5)</div>
+          <div class="chart-caption">Shows the primary residence types (e.g., Public Housing, Tenement Buildings).</div>
+          <div class="chart-body" id="chart5"></div>
+        </div>
+
+        <div class="chart-card accent-blue wide-2">
+          <div class="chart-title">Monthly Family Income Distribution (Q6)</div>
+          <div class="chart-caption">Treemap showing household counts per income group. Larger boxes mean more households.</div>
+          <div class="chart-body" id="chart6"></div>
+        </div>
+
+        <div class="chart-card accent-purple">
+          <div class="chart-title">Desired Public Facilities Improvements (Q8)</div>
+          <div class="chart-caption">Radar chart: Outer rings indicate more caregivers requested this facility.</div>
+          <div class="chart-body" id="chart9"></div>
+        </div>
+
+        <div class="chart-card accent-purple wide-2">
+          <div class="chart-title">Most Helpful Respite Services (Q9)</div>
+          <div class="chart-caption">Horizontal bar chart comparing the importance of after-school care, holiday care, emergency care, etc.</div>
+          <div class="chart-body" id="chart10"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section2" id="sec2">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="icon"><i class="fa-solid fa-ticket"></i></span>
+          <span>Voucher Usage & Stress Relief</span>
+        </div>
+        <div class="section-subtitle">
+          Understanding the actual impact of consumption vouchers on family economy and main spending categories for future policy reference.
+        </div>
+      </div>
+
+      <div class="section-grid">
+        <div class="chart-card accent-orange wide-2">
+          <div class="chart-title">Helpfulness of Vouchers (Q22)</div>
+          <div class="chart-caption">Outer rings indicate higher selection percentage. Center shows the most common rating.</div>
+          <div class="chart-body" id="chart7"></div>
+        </div>
+
+        <div class="chart-card accent-orange wide-2">
+          <div class="chart-title">Main Voucher Spending Categories (Q23)</div>
+          <div class="chart-caption">Radial bar chart showing percentage by category (Daily Goods, Food, Transport, etc.).</div>
+          <div class="chart-body" id="chart13"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section3" id="sec3">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="icon"><i class="fa-solid fa-people-group"></i></span>
+          <span>Activity Participation & Satisfaction</span>
+        </div>
+        <div class="section-subtitle">
+          Examining participation in "Child Caregiver Support Scheme" activities, overall satisfaction, and future expectations for PSC activities.
+        </div>
+      </div>
+
+      <div class="section-grid">
+        <div class="chart-card accent-blue wide-2">
+          <div class="chart-title">Participated Activities (Q18)</div>
+          <div class="chart-caption">Number of people who joined various activities (Respite, Sharing, Exploration, etc.).</div>
+          <div class="chart-body" id="chart8"></div>
+        </div>
+
+        <div class="chart-card accent-purple">
+          <div class="chart-title">Overall Activity Satisfaction (Q19)</div>
+          <div class="chart-caption">Radar chart where outer rings represent higher average satisfaction.</div>
+          <div class="chart-body" id="chart11"></div>
+        </div>
+
+        <div class="chart-card accent-green">
+          <div class="chart-title">Future Expected Activity Types (Q20)</div>
+          <div class="chart-caption">Radar chart showing demand for Parent-Child leisure, Wellness workshops, Care skills, etc.</div>
+          <div class="chart-body" id="chart12"></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const COLOR_PRIMARY = '#021640';
+    const COLOR_2 = '#0066cc';
+    const COLOR_3 = '#0099cc';
+    const COLOR_4 = '#4572c4';
+    const COLOR_5 = '#558ed5';
+    const COLOR_6 = '#1f4e79';
+
+    const AGE_LABELS = {
+      '1': 'Under 18',
+      '2': '18–29',
+      '3': '30–39',
+      '4': '40–49',
+      '5': '50–59',
+      '6': '60 or above'
+    };
+
+    const GENDER_LABELS = {
+      '1': 'Male',
+      '2': 'Female',
+      '3': 'Prefer not to say'
+    };
+
+    const HOUSING_LABELS = {
+      '1': 'Tenement/Private (Non-rooftop)',
+      '2': 'Rooftop Subdivided Unit',
+      '3': 'Dormitory/Subdivided',
+      '4': 'Subdivided Flat',
+      '5': 'Public Housing',
+      '6': 'Interim Housing',
+      '7': 'Other/Unspecified'
+    };
+
+    const INCOME_LABELS = {
+      '1': 'Below $5,000',
+      '2': '$5,000 – < $10,000',
+      '3': '$10,000 – < $15,000',
+      '4': '$15,000 – < $20,000',
+      '5': '$20,000 – < $25,000',
+      '6': '$25,000 – < $30,000',
+      '7': '$30,000 or above',
+      '8': 'Refuse to answer'
+    };
+
+    // Q22：1=Not helpful … 5=Very helpful
+    const VOUCHER_HELP_LABELS = {
+      '1': 'Not helpful at all',
+      '2': 'Not very helpful',
+      '3': 'Average',
+      '4': 'Helpful',
+      '5': 'Very Helpful'
+    };
+
+    const Q18_LABELS = {
+      Q18_Respite: 'Respite Activities',
+      Q18_Sharing: 'Sharing Sessions',
+      Q18_DadGroup: 'Dads Group',
+      Q18_Explore: 'Small Shop Exploration',
+      Q18_Volunteer: 'Volunteer Team',
+      Q18_Voucher: 'Voucher Events',
+      Q18_Other: 'Other Activities',
+      Q18_None: 'Did not participate'
+    };
+
+    const Q8_ITEMS = [
+      { key: 'Q8_Parks',       label: 'Parks & Rec Facilities' },
+      { key: 'Q8_BarrierFree', label: 'Barrier-free Facilities' },
+      { key: 'Q8_BabyToilet',  label: 'Family Restrooms' },
+      { key: 'Q8_RestSpace',   label: 'Community Rest Spaces' },
+      { key: 'Q8_Lockers',     label: 'Lockers/Hooks/Amenities' },
+      { key: 'Q8_Other_Text',  label: 'Other Suggestions', isText: true }
+    ];
+
+    const Q9_ITEMS = [
+      { key: 'Q9_AfterSchool', label: 'After-school Care' },
+      { key: 'Q9_Holiday',     label: 'Holiday/Short-term Care' },
+      { key: 'Q9_Emergency',   label: 'Emergency Care' },
+      { key: 'Q9_Night',       label: 'Night Care' },
+      { key: 'Q9_Hotline',     label: 'Hotline/Instant Support' },
+      { key: 'Q9_Other_Text',  label: 'Other Respite', isText: true }
+    ];
+
+    const Q19_ITEMS = [
+      { key: 'Q19_Respite_Sat',   label: 'Respite Activities' },
+      { key: 'Q19_Sharing_Sat',   label: 'Sharing Sessions' },
+      { key: 'Q19_DadGroup_Sat',  label: 'Dads Group' },
+      { key: 'Q19_Explore_Sat',   label: 'Shop Exploration' },
+      { key: 'Q19_Volunteer_Sat', label: 'Volunteer Team' },
+      { key: 'Q19_Voucher_Sat',   label: 'Voucher Events' },
+      { key: 'Q19_Other_Sat',     label: 'Other Activities' }
+    ];
+
+    const Q20_ITEMS = [
+      { key: 'Q20_ParentChild', label: 'Parent-Child Leisure' },
+      { key: 'Q20_Recreation',  label: 'Recreational Activities' },
+      { key: 'Q20_Health',      label: 'Wellness Workshops' },
+      { key: 'Q20_Emotion',     label: 'Emotional Management' },
+      { key: 'Q20_Skills',      label: 'Care Skills Training' },
+      { key: 'Q20_Sharing',     label: 'Knowledge Sharing' },
+      { key: 'Q20_Resources',   label: 'Resource Matching' },
+      { key: 'Q20_Volunteer',   label: 'Community Service/Volunteering' },
+      { key: 'Q20_Other_Text',  label: 'Other Ideas', isText: true }
+    ];
+
+    const Q23_ITEMS = [
+      { key: 'Q23_DailyGoods',    label: 'Daily Necessities' },
+      { key: 'Q23_Food',          label: 'Food' },
+      { key: 'Q23_Transport',     label: 'Transport' },
+      { key: 'Q23_FamilyGoods',   label: 'Family/Child Products' },
+      { key: 'Q23_Medical',       label: 'Medical/Nursing' },
+      { key: 'Q23_Entertainment', label: 'Entertainment' },
+      { key: 'Q23_Counseling',    label: 'Counseling/Support' }
+    ];
+
+    function mapLabel(map, code) {
+      const k = String(code || '').trim();
+      return map[k] || 'Unfilled';
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // smooth scroll
+      document.querySelectorAll('.top-nav button').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const target = document.querySelector(btn.dataset.target);
+          if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      });
+
+      fetch('data.xlsx')
+        .then(res => res.arrayBuffer())
+        .then(ab => {
+          const wb = XLSX.read(ab, { type: 'array' });
+          const sheetName = wb.SheetNames[0];
+          const ws = wb.Sheets[sheetName];
+          const json = XLSX.utils.sheet_to_json(ws, { defval: "" });
+          const rows = json.filter(r =>
+            r.Respondent_ID !== undefined &&
+            r.Respondent_ID !== null &&
+            String(r.Respondent_ID).trim() !== ""
+          );
+          buildDashboard(rows);
+        })
+        .catch(err => console.error('Error loading data.xlsx:', err));
+    });
+
+    function toNumber(val) {
+      if (val === undefined || val === null || val === '') return 0;
+      const num = Number(val);
+      return isNaN(num) ? 0 : num;
+    }
+
+    function buildDashboard(data) {
+      if (!data || data.length === 0) return;
+
+      const total = data.length;
+
+      const careChildCount   = data.filter(r => toNumber(r.Q4_Care_Child)   > 0).length;
+      const careElderlyCount = data.filter(r => toNumber(r.Q4_Care_Elderly) > 0).length;
+      const careDisabledCount= data.filter(r => toNumber(r.Q4_Care_Disabled)> 0).length;
+
+      const careChildPercent   = total > 0 ? (careChildCount   / total) * 100 : 0;
+      const careElderlyPercent = total > 0 ? (careElderlyCount / total) * 100 : 0;
+
+      let multiRoleCount = 0;
+      const rolesPerPersonCounts = { 0: 0, 1: 0, 2: 0, 3: 0 };
+      data.forEach(r => {
+        const roles =
+          toNumber(r.Q4_Care_Child) +
+          toNumber(r.Q4_Care_Elderly) +
+          toNumber(r.Q4_Care_Disabled);
+        if (rolesPerPersonCounts[roles] === undefined) {
+          rolesPerPersonCounts[roles] = 0;
+        }
+        rolesPerPersonCounts[roles]++;
+        if (roles >= 2) multiRoleCount++;
+      });
+      const multiRolePercent = total > 0 ? (multiRoleCount / total) * 100 : 0;
+
+      function countByField(fieldName) {
+        const freq = {};
+        data.forEach(r => {
+          const key = String(r[fieldName] || '').trim();
+          if (!key) return;
+          if (!freq[key]) freq[key] = 0;
+          freq[key]++;
+        });
+        const keys = Object.keys(freq).sort((a, b) => Number(a) - Number(b));
+        const counts = keys.map(k => freq[k]);
+        return { keys, counts, freq };
+      }
+
+      const ageInfo         = countByField('Q1_Age');
+      const genderInfo      = countByField('Q2_Gender');
+      const housingInfo     = countByField('Q5_Housing_Type');
+      const incomeInfo      = countByField('Q6_Income');
+      const voucherHelpInfo = countByField('Q22_Voucher_Help');
+
+      // Top housing type (for KPI)
+      let topHousingLabel = '—';
+      if (housingInfo.keys.length > 0) {
+        let maxIndex = 0;
+        for (let i = 1; i < housingInfo.counts.length; i++) {
+          if (housingInfo.counts[i] > housingInfo.counts[maxIndex]) {
+            maxIndex = i;
+          }
+        }
+        const topKey = housingInfo.keys[maxIndex];
+        topHousingLabel = mapLabel(HOUSING_LABELS, topKey);
+      }
+
+      // Update KPI DOM
+      document.getElementById('kpi-total-respondents').textContent = total;
+      document.getElementById('kpi-percent-care-child').textContent   = careChildPercent.toFixed(1) + '%';
+      document.getElementById('kpi-percent-care-elderly').textContent = careElderlyPercent.toFixed(1) + '%';
+      document.getElementById('kpi-percent-multi-role').textContent   = multiRolePercent.toFixed(1) + '%';
+      document.getElementById('kpi-top-housing-type').textContent     = topHousingLabel;
+
+      // Q4 distribution table + heatmap data
+      function q4Dist(fieldName) {
+        const counts = [0, 0, 0, 0, 0]; // 0–4
+        let validTotal = 0;
+        data.forEach(r => {
+          const v = toNumber(r[fieldName]);
+          if (v >= 0 && v <= 4) {
+            counts[v]++;
+            validTotal++;
+          }
+        });
+        const perc = counts.map(c => validTotal > 0 ? (c * 100 / validTotal) : 0);
+        return { counts, perc, total: validTotal };
+      }
+
+      const distChild   = q4Dist('Q4_Care_Child');
+      const distElderly = q4Dist('Q4_Care_Elderly');
+      const distDisabled= q4Dist('Q4_Care_Disabled');
+
+      const q4Body = document.getElementById('q4-table-body');
+      function appendRow(label, dist) {
+        const tr = document.createElement('tr');
+        const tdLabel = document.createElement('td');
+        tdLabel.textContent = label;
+        tr.appendChild(tdLabel);
+        ['0', '1', '2', '3', '4+'].forEach((val, idx) => {
+          const td = document.createElement('td');
+          td.textContent = dist.perc[idx].toFixed(1) + '%';
+          tr.appendChild(td);
+        });
+        q4Body.appendChild(tr);
+      }
+      appendRow('Caring for Children',   distChild);
+      appendRow('Caring for Elderly',   distElderly);
+      appendRow('Caring for Disabled', distDisabled);
+
+      // Render Q4 Heatmap
+      renderQ4Heatmap(distChild, distElderly, distDisabled);
+
+      // caring counts for chart3
+      const caringCounts = {
+        'Child':    careChildCount,
+        'Elderly':  careElderlyCount,
+        'Disabled': careDisabledCount
+      };
+      const roleLabels = Object.keys(rolesPerPersonCounts).sort((a,b)=>Number(a)-Number(b));
+      const roleSeries = roleLabels.map(k => rolesPerPersonCounts[k]);
+
+      // Q18 participation
+      const q18Labels = [];
+      const q18Counts = [];
+      [
+        'Q18_Respite',
+        'Q18_Sharing',
+        'Q18_DadGroup',
+        'Q18_Explore',
+        'Q18_Volunteer',
+        'Q18_Voucher',
+        'Q18_Other',
+        'Q18_None'
+      ].forEach(key => {
+        let c = 0;
+        data.forEach(r => { if (toNumber(r[key]) > 0) c++; });
+        q18Labels.push(Q18_LABELS[key] || key);
+        q18Counts.push(c);
+      });
+
+      // Q8 facilities
+      const q8Labels = [];
+      const q8Counts = [];
+      Q8_ITEMS.forEach(item => {
+        let c = 0;
+        data.forEach(r => {
+          if (item.isText) {
+            if (String(r[item.key] || '').trim() !== '') c++;
+          } else if (toNumber(r[item.key]) > 0) {
+            c++;
+          }
+        });
+        q8Labels.push(item.label);
+        q8Counts.push(c);
+      });
+
+      // Q9 respite services
+      const q9Labels = [];
+      const q9Counts = [];
+      Q9_ITEMS.forEach(item => {
+        let c = 0;
+        data.forEach(r => {
+          if (item.isText) {
+            if (String(r[item.key] || '').trim() !== '') c++;
+          } else if (toNumber(r[item.key]) > 0) {
+            c++;
+          }
+        });
+        q9Labels.push(item.label);
+        q9Counts.push(c);
+      });
+
+   
+
+      // Q19 satisfaction
+      const q19Labels = [];
+      const q19Scores = [];
+      Q19_ITEMS.forEach(item => {
+        let sum = 0, n = 0;
+        data.forEach(r => {
+          const v = toNumber(r[item.key]);
+          if (v > 0) {
+            sum += v;
+            n++;
+          }
+        });
+        let score = 0;
+        if (n > 0) {
+          const avg = sum / n;
+          score = avg;
+        }
+        q19Labels.push(item.label);
+        q19Scores.push(score);
+      });
+
+
+      // Q20 future activities
+      const q20Labels = [];
+      const q20Counts = [];
+      Q20_ITEMS.forEach(item => {
+        let c = 0;
+        data.forEach(r => {
+          if (item.isText) {
+            if (String(r[item.key] || '').trim() !== '') c++;
+          } else if (toNumber(r[item.key]) > 0) {
+            c++;
+          }
+        });
+        q20Labels.push(item.label);
+        q20Counts.push(c);
+      });
+
+      // Q23 spending
+      const q23Labels = [];
+      const q23Counts = [];
+      Q23_ITEMS.forEach(item => {
+        let c = 0;
+        data.forEach(r => { if (toNumber(r[item.key]) > 0) c++; });
+        q23Labels.push(item.label);
+        q23Counts.push(c);
+      });
+
+      renderCharts({
+        ageInfo,
+        genderInfo,
+        caringCounts,
+        roleLabels,
+        roleSeries,
+        housingInfo,
+        incomeInfo,
+        voucherHelpInfo,
+        q18Labels,
+        q18Counts,
+        q8Labels,
+        q8Counts,
+        q9Labels,
+        q9Counts,
+        q19Labels,
+        q19Scores,
+        q20Labels,
+        q20Counts,
+        q23Labels,
+        q23Counts
+      });
+    }
+
+    // Q4 Heatmap
+    function renderQ4Heatmap(distChild, distElderly, distDisabled) {
+      const categories = ['0', '1', '2', '3', '4+'];
+
+      function makeSeries(name, percArray) {
+        return {
+          name,
+          data: categories.map((label, idx) => ({
+            x: label,
+            y: Number(percArray[idx].toFixed(1))
+          }))
+        };
+      }
+
+      const series = [
+        makeSeries('Caring for Disabled', distDisabled.perc),
+        makeSeries('Caring for Elderly',     distElderly.perc),
+        makeSeries('Caring for Children',     distChild.perc)
+      ];
+
+      new ApexCharts(document.querySelector("#q4-chart"), {
+        chart: {
+          type: 'heatmap',
+          height: 260,
+          toolbar: { show: false }
+        },
+        series,
+        dataLabels: {
+          enabled: true,
+          style: { colors: ['#fff'], fontSize: '11px' },
+          formatter: val => val ? val.toFixed(0) + '%' : '0%'
+        },
+        xaxis: {
+          title: { text: 'Number of people cared for', style: { color: COLOR_PRIMARY } },
+          labels: { style: { colors: COLOR_PRIMARY, fontSize: '11px' } }
+        },
+        yaxis: {
+          title: { text: 'Care Recipient', style: { color: COLOR_PRIMARY } },
+          labels: { style: { colors: COLOR_PRIMARY, fontSize: '11px' } }
+        },
+        colors: ['#dbe9ff'],
+        plotOptions: {
+          heatmap: {
+            shadeIntensity: 0.6,
+            colorScale: {
+              ranges: [
+                { from: 0,  to: 10, color: '#e8f0ff', name: '0–10%' },
+                { from: 10, to: 30, color: '#bdd5ff', name: '10–30%' },
+                { from: 30, to: 60, color: '#7fa7ff', name: '30–60%' },
+                { from: 60, to: 100, color: '#315f9f', name: '60%+' }
+              ]
+            }
+          }
+        },
+        legend: {
+          position: 'right',
+          labels: { colors: COLOR_PRIMARY, useSeriesColors: false }
+        },
+        tooltip: {
+          y: {
+            formatter: (val, opts) => {
+              const rowName = opts.seriesName;
+              return `${rowName}: ${val.toFixed(1)}% Respondents`;
+            }
+          }
+        }
+      }).render();
+    }
+
+    function renderCharts(d) {
+      // 1 Age (bar)
+      new ApexCharts(document.querySelector("#chart1"), {
+        chart: { type: 'bar', height: 280, toolbar: { show: false } },
+        series: [{ name: 'Respondents', data: d.ageInfo.counts }],
+        xaxis: {
+          title: { text: 'Age Group', style: { color: COLOR_PRIMARY } },
+          categories: d.ageInfo.keys.map(k => mapLabel(AGE_LABELS, k)),
+          labels: { style: { colors: COLOR_PRIMARY, fontSize: '11px' } }
+        },
+        yaxis: {
+          title: { text: 'Count', style: { color: COLOR_PRIMARY } },
+          labels: { style: { colors: COLOR_PRIMARY, fontSize: '11px' } }
+        },
+        plotOptions: { bar: { columnWidth: '55%', borderRadius: 6 } },
+        colors: [COLOR_PRIMARY],
+        dataLabels: { enabled: false }
+      }).render();
+
+      // 2 Gender (donut)
+      new ApexCharts(document.querySelector("#chart2"), {
+        chart: { type: 'donut', height: 280 },
+        series: d.genderInfo.counts,
+        labels: d.genderInfo.keys.map(k => mapLabel(GENDER_LABELS, k)),
+        colors: [COLOR_PRIMARY, COLOR_2, COLOR_3],
+        legend: { position: 'bottom', labels: { colors: COLOR_PRIMARY } },
+        dataLabels: { enabled: true, formatter: val => val.toFixed(1) + '%' }
+      }).render();
+
+      // 3 Caring roles (polar area)
+      new ApexCharts(document.querySelector("#chart3"), {
+        chart: { type: 'polarArea', height: 280 },
+        series: ['Child', 'Elderly', 'Disabled'].map(k => d.caringCounts[k]),
+        labels: ['Children', 'Elderly', 'Disabled'],
+        colors: [COLOR_2, COLOR_3, COLOR_4],
+        stroke: { width: 1 },
+        legend: { position: 'bottom', labels: { colors: COLOR_PRIMARY } },
+        dataLabels: { enabled: false },
+        yaxis: { show: false }
+      }).render();
+
+      // 5 Housing (vertical bar)
+      new ApexCharts(document.querySelector("#chart5"), {
+        chart: { type: 'bar', height: 280, toolbar: { show: false } },
+        series: [{ name: 'Households', data: d.housingInfo.counts }],
+        xaxis: {
+          title: { text: 'Housing Type', style: { color: COLOR_PRIMARY } },
+          categories: d.housingInfo.keys.map(k => mapLabel(HOUSING_LABELS, k)),
+          labels: { style: { colors: COLOR_PRIMARY, fontSize: '11px' }, rotate: -20 }
+        },
+        yaxis: {
+          title: { text: 'Count', style: { color: COLOR_PRIMARY } },
+          labels: { style: { colors: COLOR_PRIMARY, fontSize: '11px' } }
+        },
+        plotOptions: { bar: { columnWidth: '55%', borderRadius: 6 } },
+        colors: [COLOR_4],
+        dataLabels: { enabled: false }
+      }).render();
+
+      // 6 Income (treemap)
+      new ApexCharts(document.querySelector("#chart6"), {
+        chart: { type: 'treemap', height: 300, toolbar: { show: false } },
+        series: [{
+          data: d.incomeInfo.keys.map((k, idx) => ({
+            x: mapLabel(INCOME_LABELS, k),
+            y: d.incomeInfo.counts[idx]
+          }))
+        }],
+        dataLabels: {
+          enabled: true,
+          style: { fontSize: '11px', colors: ['#fff'] },
+          formatter: function (text, opt) {
+            const value = opt.value;
+            return text + '\n(' + value + ' households)';
+          }
+        },
+        colors: [COLOR_5, COLOR_2, COLOR_3, COLOR_4, COLOR_6, COLOR_PRIMARY, '#8e44ad', '#27ae60']
+      }).render();
+
+      /* 7 Q22 Voucher help (radial bar) */
+      const voucherCodes = ['5','4','3','2','1'];
+      const voucherCounts = voucherCodes.map(code =>
+        (d.voucherHelpInfo.freq && d.voucherHelpInfo.freq[code])
+          ? d.voucherHelpInfo.freq[code]
+          : 0
+      );
+      const voucherTotal = voucherCounts.reduce((a,b) => a + b, 0);
+      const voucherPerc = voucherCounts.map(c => voucherTotal > 0 ? (c * 100 / voucherTotal) : 0);
+      const voucherLabels = voucherCodes.map(code => VOUCHER_HELP_LABELS[code] || ('Option ' + code));
+
+      let maxIdx = 0;
+      for (let i = 1; i < voucherPerc.length; i++) {
+        if (voucherPerc[i] > voucherPerc[maxIdx]) maxIdx = i;
+      }
+      const maxLabel = voucherLabels[maxIdx];
+      const maxPerc  = voucherPerc[maxIdx];
+
+      new ApexCharts(document.querySelector("#chart7"), {
+        chart: { type: 'radialBar', height: 320 },
+        series: voucherPerc,
+        labels: voucherLabels,
+        colors: ['#ffb347', '#ff7a8a', '#0066cc', '#8e44ad', '#27ae60'],
+        plotOptions: {
+          radialBar: {
+            dataLabels: {
+              name: { fontSize: '12px' },
+              value: {
+                fontSize: '12px',
+                formatter: v => v.toFixed(1) + '%'
+              },
+              total: {
+                show: true,
+                label: 'Majority opinion',
+                formatter: () => `${maxLabel} (${maxPerc.toFixed(1)}%)`
+              }
+            }
+          }
+        },
+        legend: {
+          show: true,
+          position: 'right',
+          labels: { colors: COLOR_PRIMARY },
+          formatter: (seriesName, opts) => {
+            const val = voucherCounts[opts.seriesIndex];
+            return `${seriesName}: ${val} people`;
+          }
+        }
+      }).render();
+
+      // 8 Q18 participation
+      new ApexCharts(document.querySelector("#chart8"), {
+        chart: { type: 'bar', height: 280, toolbar: { show: false } },
+        series: [{ name: 'Participants', data: d.q18Counts }],
+        xaxis: {
+          title: { text: 'Activity Type', style: { color: COLOR_PRIMARY } },
+          categories: d.q18Labels,
+          labels: { style: { colors: COLOR_PRIMARY, fontSize: '11px' }, rotate: -20 }
+        },
+        yaxis: {
+          title: { text: 'Count', style: { color: COLOR_PRIMARY } },
+          labels: { style: { colors: COLOR_PRIMARY, fontSize: '11px' } }
+        },
+        plotOptions: { bar: { columnWidth: '55%', distributed: true, borderRadius: 6 } },
+        colors: [COLOR_PRIMARY, COLOR_2, COLOR_3, COLOR_4, COLOR_5, COLOR_6, '#8e44ad', '#27ae60'],
+        dataLabels: { enabled: false },
+        tooltip: { y: { formatter: v => `${v} Respondents` } }
+      }).render();
+
+      // 9 Q8 facilities (radar)
+      new ApexCharts(document.querySelector("#chart9"), {
+        chart: { type: 'radar', height: 340, toolbar: { show: false } },
+        series: [{ name: 'Selections', data: d.q8Counts }],
+        labels: d.q8Labels,
+        colors: [COLOR_PRIMARY],
+        yaxis: {
+          labels: { style: { colors: [COLOR_PRIMARY], fontSize: '10px' } },
+          tickAmount: 5
+        },
+        stroke: { width: 2 },
+        fill: { opacity: 0.25 },
+        markers: { size: 3 }
+      }).render();
+
+      // 10 Q9 respite services (horizontal bar, top 5)
+      const q9LabelsTop5 = d.q9Labels.slice(0, 5);
+      const q9CountsTop5 = d.q9Counts.slice(0, 5);
+
+      new ApexCharts(document.querySelector("#chart10"), {
+        chart: { type: 'bar', height: 300, toolbar: { show: false } },
+        series: [{ name: 'Respondents', data: q9CountsTop5 }],
+        plotOptions: {
+          bar: {
+            horizontal: true,
+            barHeight: '50%',
+            borderRadius: 6
+          }
+        },
+        xaxis: {
+          categories: q9LabelsTop5,
+          title: { text: 'Count', style: { color: COLOR_PRIMARY } },
+          labels: { style: { colors: COLOR_PRIMARY, fontSize: '11px' } }
+        },
+        yaxis: {
+          title: { text: 'Respite Service Type', style: { color: COLOR_PRIMARY } },
+          labels: { style: { colors: COLOR_PRIMARY, fontSize: '11px' } }
+        },
+        colors: ['#27ae60'],
+        dataLabels: { enabled: false },
+        tooltip: { y: { formatter: v => `${v} Respondents` } }
+      }).render();
+
+
+      // 11 Q19 satisfaction (radar)
+      new ApexCharts(document.querySelector("#chart11"), {
+        chart: { type: 'radar', height: 340, toolbar: { show: false } },
+        series: [{ name: 'Avg Satisfaction (Higher is better)', data: d.q19Scores }],
+        labels: d.q19Labels,
+        colors: ['#8e44ad'],
+        yaxis: {
+          min: 0,
+          max: 5,
+          tickAmount: 5,
+          labels: { style: { colors: [COLOR_PRIMARY], fontSize: '10px' } }
+        },
+        stroke: { width: 2 },
+        fill: { opacity: 0.25 },
+        markers: { size: 3 }
+      }).render();
+
+      // 12 Q20 future activities (radar)
+      new ApexCharts(document.querySelector("#chart12"), {
+        chart: { type: 'radar', height: 340, toolbar: { show: false } },
+        series: [{ name: 'Interested', data: d.q20Counts }],
+        labels: d.q20Labels,
+        colors: [COLOR_4],
+        yaxis: {
+          labels: { style: { colors: [COLOR_PRIMARY], fontSize: '10px' } },
+          tickAmount: 5
+        },
+        stroke: { width: 2 },
+        fill: { opacity: 0.25 },
+        markers: { size: 3 },
+        tooltip: { y: { formatter: v => `${v} Respondents` } }
+      }).render();
+
+      // 13 Q23 spending (radial bar)
+      new ApexCharts(document.querySelector("#chart13"), {
+        chart: { type: 'radialBar', height: 300 },
+        series: d.q23Counts,
+        labels: d.q23Labels,
+        colors: ['#ffb347', '#ff7a8a', '#0066cc', '#27ae60', '#8e44ad', '#558ed5', '#1f4e79'],
+        
+        legend: {
+          show: true,
+          position: 'right',
+          labels: { colors: COLOR_PRIMARY },
+          formatter: (seriesName, opts) => {
+            const val = opts.w.globals.series[opts.seriesIndex];
+            return seriesName + ': ' + val + ' people';
+          }
+        }
+      }).render();
+    }
+  </script>
+</body>
+</html>
